@@ -116,10 +116,10 @@ class Showcase extends StatefulWidget {
             animationDuration != null);
 
   @override
-  _ShowcaseState createState() => _ShowcaseState();
+  ShowcaseState createState() => ShowcaseState();
 }
 
-class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
+class ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
   bool _showShowCase = false;
   Animation<double> _slideAnimation;
   AnimationController _slideAnimationController;
@@ -180,7 +180,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
             Duration(
                 seconds: ShowCaseWidget.of(context).autoPlayDelay.inSeconds),
             () {
-          _nextIfAny();
+          nextIfAny();
         });
       }
     }
@@ -197,7 +197,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
     );
   }
 
-  void _nextIfAny() {
+  void nextIfAny() {
     if (timer != null && timer.isActive) {
       if (ShowCaseWidget.of(context).autoPlayLockEnable) {
         return;
@@ -212,12 +212,16 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
     }
   }
 
+  dismissTheTourEvenIfNotCompleted() {
+    ShowCaseWidget.of(context).dismiss();
+  }
+
   void _getOnTargetTap() {
     if (widget.disposeOnTap == true) {
       ShowCaseWidget.of(context).dismiss();
       widget.onTargetClick();
     } else {
-      (widget.onTargetClick ?? _nextIfAny)?.call();
+      (widget.onTargetClick ?? nextIfAny)?.call();
     }
   }
 
@@ -240,18 +244,15 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
         maintainState: true,
         child: Stack(
           children: [
-            GestureDetector(
-              onTap: _nextIfAny,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: CustomPaint(
-                  painter: ShapePainter(
-                      opacity: widget.overlayOpacity,
-                      rect: position.getRect(),
-                      shapeBorder: widget.shapeBorder,
-                      color: widget.overlayColor),
-                ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: CustomPaint(
+                painter: ShapePainter(
+                    opacity: widget.overlayOpacity,
+                    rect: position.getRect(),
+                    shapeBorder: widget.shapeBorder,
+                    color: widget.overlayColor),
               ),
             ),
             _TargetWidget(
